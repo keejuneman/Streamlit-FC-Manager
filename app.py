@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import re
+import matplotlib.font_manager as fm
+
 
 st.set_page_config(
     page_title="FC Manager",
@@ -28,6 +30,17 @@ if font_option == 'Windows : Malgun Gothic':
 else:
     plt.rcParams['font.family'] = 'AppleGothic'
 
+plt.rcParams['axes.unicode_minus'] = False
+
+# 폰트 파일 경로 설정
+if font_option == 'Windows : Malgun Gothic':
+    font_path = '../Fonts/malgun.ttf'  # Windows
+else:
+    font_path = '../Fonts/AppleGothic.ttf'  # Mac
+
+# 폰트 파일 로드
+fontprop = fm.FontProperties(fname=font_path)
+plt.rcParams['font.family'] = fontprop.get_name()
 plt.rcParams['axes.unicode_minus'] = False
 
 # 조사 종류 선택
