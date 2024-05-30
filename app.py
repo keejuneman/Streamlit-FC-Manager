@@ -25,13 +25,6 @@ font_option = st.sidebar.radio(
     ('Windows : Malgun Gothic', 'MAC : AppleGothic')
 )
 
-if font_option == 'Windows : Malgun Gothic':
-    plt.rcParams['font.family'] = 'Malgun Gothic'
-else:
-    plt.rcParams['font.family'] = 'AppleGothic'
-
-plt.rcParams['axes.unicode_minus'] = False
-
 # 폰트 파일 경로 설정
 if font_option == 'Windows : Malgun Gothic':
     font_path = os.path.join(os.path.dirname(__file__), 'Fonts', 'malgun.ttf')  # Windows
@@ -106,21 +99,20 @@ if survey_option == '데일리 만족도 조사 추이 분석':
                                 ha='center', va='center', fontsize=20, color='black', xytext=(0, 10),
                                 textcoords='offset points')
 
-                ax.set_xlabel("날짜", fontsize=20)
-                ax.set_ylabel("평균 값", fontsize=20)
-                ax.set_title(f"데일리 만족도 조사 변동 추이", fontsize=20)
+                ax.set_xlabel("날짜", fontsize=20, fontproperties=fontprop)
+                ax.set_ylabel("평균 값", fontsize=20, fontproperties=fontprop)
+                ax.set_title(f"데일리 만족도 조사 변동 추이", fontsize=20, fontproperties=fontprop)
 
                 # x label 가로 정렬
-                ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=10)
+                ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=10, fontproperties=fontprop)
 
                 # y label 폰트 크기 설정
                 ax.tick_params(axis='y', labelsize=20)
 
                 # 범례 폰트 크기 설정
-                ax.legend(fontsize=16, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=len(y_columns))
+                ax.legend(fontsize=16, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=len(y_columns), prop=fontprop)
 
                 st.pyplot(fig)
-
 
 # # 정성 평가 분석 화면
 # elif survey_option == '정성 평가 감정 분석':
