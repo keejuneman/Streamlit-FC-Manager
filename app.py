@@ -67,10 +67,12 @@ if survey_option == '데일리 만족도 조사 추이 분석':
         with col1:
             # 라디오 버튼과 체크박스 생성
             graph_type = st.radio("그래프 종류 선택:", ["Bar", "Line", "Scatter"])
-            x_column = st.radio("X Label : 날짜가 있는 컬럼 선택", df.columns.tolist())
+            
+            # X Label 선택
+            x_column = st.selectbox("X Label : 날짜가 있는 컬럼 선택", ['Choose an option'] + df.columns.tolist())
+            
+            # Y Label 선택
             y_columns = st.multiselect("Y Label : 정량 평가 수치가 있는 컬럼", df.columns.tolist())
-
-
 
         with col2:
             # 구분선을 추가하기 위한 HTML/CSS
