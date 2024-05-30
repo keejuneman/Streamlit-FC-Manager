@@ -27,7 +27,7 @@ font_option = st.sidebar.radio(
 # 조사 종류 선택
 survey_option = st.sidebar.radio(
     "항목 선택",
-    ('데일리 만족도 조사 추이 분석', '정성 평가 감정 분석')
+    ('데일리 만족도 조사 추이 분석', '정성 평가 감정 분석 [개발 중]')
 )
 
 # 데일리 만족도 조사 화면
