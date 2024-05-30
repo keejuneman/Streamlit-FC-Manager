@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 import re
-import matplotlib.font_manager as fm
-import os
 
 st.set_page_config(
     page_title="FC Manager",
@@ -24,17 +22,6 @@ font_option = st.sidebar.radio(
     "OS 선택",
     ('Windows : Malgun Gothic', 'MAC : AppleGothic')
 )
-
-# 폰트 파일 경로 설정
-if font_option == 'Windows : Malgun Gothic':
-    font_path = os.path.join(os.path.dirname(__file__), 'Fonts', 'malgun.ttf')  # Windows
-else:
-    font_path = os.path.join(os.path.dirname(__file__), 'Fonts', 'AppleGothic.ttf')  # Mac
-
-# 폰트 파일 로드
-fontprop = fm.FontProperties(fname=font_path)
-plt.rcParams['font.family'] = fontprop.get_name()
-plt.rcParams['axes.unicode_minus'] = False
 
 # 조사 종류 선택
 survey_option = st.sidebar.radio(
