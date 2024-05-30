@@ -80,6 +80,9 @@ if survey_option == '데일리 만족도 조사 추이 분석':
             # 라디오 버튼과 체크박스 생성
             x_column = st.radio("X Label을 위한 컬럼 선택 (날짜가 있는 컬럼 선택):", df.columns.tolist())
             y_columns = st.multiselect("Y Label을 위한 컬럼 선택 (정량 평가 수치가 있는 컬럼 선택):", df.columns.tolist())
+            
+            # 그래프 타입 선택
+            graph_type = st.radio("그래프 종류 선택:", ["Bar", "Line", "Scatter"])
 
             # 데이터 프레임 출력
             st.write("Google Sheets 데이터:")
@@ -88,147 +91,32 @@ if survey_option == '데일리 만족도 조사 추이 분석':
         with col2:
             # 그래프 생성
             if x_column and y_columns:
-                grouped_df = df.groupby(x_column)[y_columns].mean()
-                
-                plt.style.use('seaborn-v0_8-pastel')
+                grouped_df = df.groupby(x_column)[y_columns].mean().reset_index()
+                width = 1000
+                height = 800
+                if graph_type == "Bar":
+                    fig = px.bar(grouped_df, x=x_column, y=y_columns, barmode='group', title='데일리 만족도 조사 변동 추이', width=width, height=height)
+                elif graph_type == "Line":
+                    fig = px.line(grouped_df, x=x_column, y=y_columns, title='데일리 만족도 조사 변동 추이', width=width, height=height)
+                elif graph_type == "Scatter":
+                    fig = px.scatter(grouped_df, x=x_column, y=y_columns, title='데일리 만족도 조사 변동 추이', width=width, height=height)
 
-                fig, ax = plt.subplots(figsize=(18, 12))
-                grouped_df.plot(kind='bar', ax=ax)
+                fig.update_layout(
+                    xaxis_title="날짜",
+                    yaxis_title="평균 값",
+                    title_font_size=20,
+                    xaxis_tickfont_size=12,
+                    yaxis_tickfont_size=20,
+                    legend_title_font_size=16,
+                    legend_font_size=16,
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="right",
+                        x=1
+                    )
+                )
 
-                # 수치 값 텍스트로 표기
-                for p in ax.patches:
-                    ax.annotate(f'{p.get_height():.2f}', (p.get_x() + p.get_width() / 2., p.get_height()),
-                                ha='center', va='center', fontsize=20, color='black', xytext=(0, 10),
-                                textcoords='offset points')
+                st.plotly_chart(fig)
 
-                ax.set_xlabel("날짜", fontsize=20, fontproperties=fontprop)
-                ax.set_ylabel("평균 값", fontsize=20, fontproperties=fontprop)
-                ax.set_title(f"데일리 만족도 조사 변동 추이", fontsize=20, fontproperties=fontprop)
-
-                # x label 가로 정렬
-                ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=10, fontproperties=fontprop)
-
-                # y label 폰트 크기 설정
-                ax.tick_params(axis='y', labelsize=20)
-
-                # 범례 폰트 크기 설정
-                ax.legend(fontsize=16, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=len(y_columns), prop=fontprop)
-
-                st.pyplot(fig)
-
-# # 정성 평가 분석 화면
-# elif survey_option == '정성 평가 감정 분석':
-#     st.title("정성 평가 감정 분석")
-
-#     # 사용자에게 Google Sheets 링크를 입력받는 텍스트 박스
-#     sheet_url_qual = st.text_input("Google Sheets 링크를 입력하세요:")
-#     sheet_url_btn_qual = st.button("Enter")
-
-#     # 세션 상태 초기화
-#     if "df_qual" not in st.session_state:
-#         st.session_state.df_qual = None
-
-#     # 텍스트 박스에 URL이 입력되었을 때만 실행
-#     if sheet_url_qual and sheet_url_btn_qual:
-#         try:
-#             # Google Sheets와 연결 생성
-#             conn_qual = st.connection("gsheets", type=GSheetsConnection, url=sheet_url_qual)
-
-#             # 데이터 프레임 읽기
-#             st.session_state.df_qual = conn_qual.read()
-
-#         except Exception as e:
-#             st.error(f"Google Sheets와 연결하는 데 실패했습니다: {e}")
-
-#     # 데이터 프레임이 세션 상태에 존재할 때만 실행
-#     if st.session_state.df_qual is not None:
-#         df_qual = st.session_state.df_qual
-
-#         # 데이터 프레임 출력
-#         st.write("Google Sheets 데이터:")
-#         st.dataframe(df_qual)
-
-#         # 감정 분석을 위한 컬럼 선택
-#         columns_list = [""] + df_qual.columns.tolist()
-#         text_column = st.radio("감정 분석을 위한 컬럼 선택:", columns_list)
-
-#         if text_column:
-#             if text_column != "":
-#                 # 모든 값을 문자열로 변환
-#                 df_qual[text_column] = df_qual[text_column].astype(str)
-
-#                 # BERT 모델과 토크나이저 로드
-#                 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
-#                 model = BertForSequenceClassification.from_pretrained('bert-base-multilingual-cased', num_labels=2)
-                
-#                 # GPU 사용 설정
-#                 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-                
-#                 # 학습된 모델의 가중치 로드 (CPU 사용 시 map_location 설정)
-#                 state_dict = torch.load('trained_model.pth', map_location=device)
-                
-#                 # 새로운 모델의 state_dict를 가져오기
-#                 new_state_dict = model.state_dict()
-
-#                 # 학습된 모델의 state_dict를 새 모델로 옮기기 (임베딩 레이어를 제외한 나머지 파라미터만)
-#                 for name, param in state_dict.items():
-#                     if name in new_state_dict and param.size() == new_state_dict[name].size():
-#                         new_state_dict[name].copy_(param)
-
-#                 model.load_state_dict(new_state_dict)
-                
-#                 model.to(device)
-
-#                 # 데이터셋 정의
-#                 class TextDataset(Dataset):
-#                     def __init__(self, texts, tokenizer, max_len):
-#                         self.texts = texts
-#                         self.tokenizer = tokenizer
-#                         self.max_len = max_len
-
-#                     def __len__(self):
-#                         return len(self.texts)
-
-#                     def __getitem__(self, idx):
-#                         text = self.texts[idx]
-#                         encoding = self.tokenizer.encode_plus(
-#                             text,
-#                             add_special_tokens=True,
-#                             max_length=self.max_len,
-#                             return_token_type_ids=False,
-#                             padding='max_length',
-#                             return_attention_mask=True,
-#                             return_tensors='pt',
-#                             truncation=True,
-#                         )
-
-#                         return {
-#                             'text': text,
-#                             'input_ids': encoding['input_ids'].flatten(),
-#                             'attention_mask': encoding['attention_mask'].flatten()
-#                         }
-
-#                 # 감정 분석 수행 함수
-#                 def analyze_sentiment(texts):
-#                     dataset = TextDataset(texts, tokenizer, max_len=128)
-#                     dataloader = DataLoader(dataset, batch_size=32, shuffle=False)
-
-#                     model.eval()
-#                     sentiments = []
-#                     with torch.no_grad():
-#                         for batch in dataloader:
-#                             input_ids = batch['input_ids'].to(device)
-#                             attention_mask = batch['attention_mask'].to(device)
-
-#                             outputs = model(input_ids, attention_mask=attention_mask)
-#                             logits = outputs.logits
-#                             predictions = torch.argmax(logits, dim=1)
-#                             sentiments.extend(predictions.cpu().numpy())
-
-#                     return ["긍정" if sentiment == 1 else "부정" for sentiment in sentiments]
-
-#                 df_qual['감정 분석 결과'] = analyze_sentiment(df_qual[text_column].tolist())
-
-#                 # 결과 출력
-#                 st.write("감정 분석 결과:")
-#                 st.dataframe(df_qual[['감정 분석 결과'] + [text_column]])
