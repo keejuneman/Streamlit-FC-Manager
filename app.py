@@ -89,6 +89,8 @@ if survey_option == '데일리 만족도 조사 추이 분석':
             # 그래프 생성
             if x_column and y_columns:
                 grouped_df = df.groupby(x_column)[y_columns].mean()
+                
+                plt.style.use('seaborn-v0_8-pastel')
 
                 fig, ax = plt.subplots(figsize=(18, 12))
                 grouped_df.plot(kind='bar', ax=ax)
