@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import re
 import matplotlib.font_manager as fm
-
+import os
 
 st.set_page_config(
     page_title="FC Manager",
@@ -34,9 +34,9 @@ plt.rcParams['axes.unicode_minus'] = False
 
 # 폰트 파일 경로 설정
 if font_option == 'Windows : Malgun Gothic':
-    font_path = '../Fonts/malgun.ttf'  # Windows
+    font_path = os.path.join(os.path.dirname(__file__), 'Fonts', 'malgun.ttf')  # Windows
 else:
-    font_path = '../Fonts/AppleGothic.ttf'  # Mac
+    font_path = os.path.join(os.path.dirname(__file__), 'Fonts', 'AppleGothic.ttf')  # Mac
 
 # 폰트 파일 로드
 fontprop = fm.FontProperties(fname=font_path)
